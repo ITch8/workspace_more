@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type Campaign = {
   id: number;
@@ -13,12 +14,24 @@ type Campaign = {
 const statuses = ["draft", "running", "paused", "completed", "archived"];
 
 export default function CampaignsPage() {
+  const router = useRouter();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [name, setName] = useState("");
   const [error, setError] = useState("");
 
-  async function loadCampaigns() {
+  function getAuthToken() {
     const token = localStorage.getItem("token");
+    if (!token || token === "undefined" || token === "null") {
+      localStorage.removeItem("token");
+      router.push("/login");
+      return null;
+    }
+    return token;
+  }
+
+  async function loadCampaigns() {
+    const token = getAuthToken();
+    if (!token) return;
     const res = await fetch("/api/campaigns", {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -36,7 +49,8 @@ export default function CampaignsPage() {
 
   async function createCampaign(e: FormEvent) {
     e.preventDefault();
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
+    if (!token) return;
     const res = await fetch("/api/campaigns", {
       method: "POST",
       headers: {
@@ -55,7 +69,8 @@ export default function CampaignsPage() {
   }
 
   async function updateStatus(id: number, status: string) {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
+    if (!token) return;
     await fetch(`/api/campaigns/${id}`, {
       method: "PATCH",
       headers: {
@@ -68,7 +83,8 @@ export default function CampaignsPage() {
   }
 
   async function removeCampaign(id: number) {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
+    if (!token) return;
     await fetch(`/api/campaigns/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
@@ -78,21 +94,30 @@ export default function CampaignsPage() {
 
   return (
     <section className="space-y-6">
-      <h1 className="text-xl font-semibold">Campaign Management</h1>
-      <form onSubmit={createCampaign} className="flex gap-2">
-        <input
-          placeholder="Campaign name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <button className="bg-slate-900 text-white" type="submit">
-          Create
-        </button>
+      <div className="card">
+        <h1 className="display-1">Campaign Management</h1>
+        <p className="text-muted">Create and manage campaign status in real time.</p>
+      </div>
+      <form onSubmit={createCampaign} className="card grid-12" aria-label="Create campaign">
+        <div className="col-6">
+          <input
+            placeholder="Campaign name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            aria-label="Campaign name"
+          />
+        </div>
+        <div className="col-6">
+          <button className="btn btn-primary" type="submit">
+            Create campaign
+          </button>
+        </div>
       </form>
 
-      <table className="w-full bg-white">
-        <thead>
-          <tr className="text-left">
+      <div className="table-wrap">
+        <table aria-label="Campaigns table">
+          <thead>
+            <tr>
             <th>Name</th>
             <th>Status</th>
             <th>Created</th>
@@ -101,9 +126,9 @@ export default function CampaignsPage() {
         </thead>
         <tbody>
           {campaigns.map((c) => (
-            <tr key={c.id} className="border-t">
+            <tr key={c.id}>
               <td>
-                <Link className="underline" href={`/campaigns/${c.id}`}>
+                <Link className="text-blue-700 hover:underline" href={`/campaigns/${c.id}`}>
                   {c.name}
                 </Link>
               </td>
@@ -121,14 +146,15 @@ export default function CampaignsPage() {
               </td>
               <td>{new Date(c.createdAt).toLocaleString()}</td>
               <td>
-                <button onClick={() => removeCampaign(c.id)} className="text-red-600">
+                <button className="btn btn-danger" onClick={() => removeCampaign(c.id)}>
                   Delete
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
       {error && <p className="text-red-600">{error}</p>}
     </section>
   );

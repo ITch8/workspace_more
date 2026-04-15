@@ -27,17 +27,18 @@ export default function RegisterPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-md space-y-3">
-      <h1 className="text-xl font-semibold">Register</h1>
-      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-      <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+    <form onSubmit={onSubmit} className="card max-w-xl space-y-3" aria-label="Register form">
+      <h1 className="display-1">Create account</h1>
+      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" aria-label="Name" />
+      <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" aria-label="Email" />
       <input
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
         type="password"
+        aria-label="Password"
       />
-      <button type="submit" className="bg-slate-900 text-white">
+      <button type="submit" className="btn btn-primary">
         Create account
       </button>
       {error && <p className="text-red-600">{error}</p>}

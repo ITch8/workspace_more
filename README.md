@@ -38,7 +38,7 @@ Nginx 配置文件路径：`nginx/default.conf`。
 
 ### 仅启动数据库与 Redis
 
-在本机用 `npm run dev` 跑 Next 时，可只起基础设施：
+在本机用 `pnpm dev` 跑 Next 时，可只起基础设施：
 
 ```bash
 docker compose up -d db redis
@@ -55,10 +55,10 @@ JWT_SECRET="your_secret"
 另开终端执行迁移与开发服务：
 
 ```bash
-npm install
-npx prisma migrate dev
-npm run dev
-npm run worker:csv
+pnpm install
+pnpm prisma migrate dev
+pnpm dev
+pnpm run worker:csv
 ```
 
 ## 本地开发（不使用 Docker）
@@ -68,28 +68,28 @@ npm run worker:csv
 3. 安装依赖并迁移：
 
 ```bash
-npm install
-npx prisma migrate dev
+pnpm install
+pnpm prisma migrate dev
 ```
 
 4. 启动应用与 Worker（各需一个终端）：
 
 ```bash
-npm run dev
-npm run worker:csv
+pnpm dev
+pnpm run worker:csv
 ```
 
 ## 常用脚本
 
 | 命令 | 说明 |
 | --- | --- |
-| `npm run dev` | Next.js 开发服务器 |
-| `npm run build` / `npm run start` | 生产构建与启动 |
-| `npm run worker:csv` | BullMQ CSV 导入 Worker |
-| `npm run prisma:generate` | 生成 Prisma Client |
-| `npm run prisma:migrate` | 开发环境迁移（`migrate dev`） |
-| `npm run prisma:deploy` | 生产/CI 迁移（`migrate deploy`） |
-| `npm run lint` | ESLint |
+| `pnpm dev` | Next.js 开发服务器 |
+| `pnpm build` / `pnpm start` | 生产构建与启动 |
+| `pnpm run worker:csv` | BullMQ CSV 导入 Worker |
+| `pnpm run prisma:generate` | 生成 Prisma Client |
+| `pnpm run prisma:migrate` | 开发环境迁移（`migrate dev`） |
+| `pnpm run prisma:deploy` | 生产/CI 迁移（`migrate deploy`） |
+| `pnpm lint` | ESLint |
 
 ## 项目结构（摘要）
 

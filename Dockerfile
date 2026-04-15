@@ -3,22 +3,28 @@ WORKDIR /app
 
 RUN apk add --no-cache libc6-compat openssl
 
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
+RUN npm config set registry https://registry.npmmirror.com
+
 COPY package.json ./
-RUN npm install
+RUN pnpm install
 
 COPY . .
-RUN npx prisma generate
+RUN pnpm prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+RUN pnpm run build
 
 FROM node:22-alpine AS runner
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat openssl
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=builder /app /app
 
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && exec npm run start"]
+CMD ["sh", "-c", "pnpm prisma migrate deploy && exec pnpm run start"]

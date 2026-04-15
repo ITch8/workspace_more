@@ -22,21 +22,32 @@ export default function LoginPage() {
       setError(data.message || "Login failed");
       return;
     }
-    localStorage.setItem("token", data.token);
+    const token = data?.data?.token;
+    if (!token || typeof token !== "string") {
+      setError("Login response missing token");
+      return;
+    }
+    localStorage.setItem("token", token);
     router.push("/campaigns");
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-md space-y-3">
-      <h1 className="text-xl font-semibold">Login</h1>
-      <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+    <form onSubmit={onSubmit} className="card max-w-xl space-y-3" aria-label="Login form">
+      <h1 className="display-1">Sign in</h1>
+      <input
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+        aria-label="Email"
+      />
       <input
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
         type="password"
+        aria-label="Password"
       />
-      <button type="submit" className="bg-slate-900 text-white">
+      <button type="submit" className="btn btn-primary">
         Login
       </button>
       {error && <p className="text-red-600">{error}</p>}
